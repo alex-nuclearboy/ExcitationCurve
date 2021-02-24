@@ -382,6 +382,11 @@ void excitationFunction() {
       Double_t systErr_total_percent = TMath::Sqrt(4.8*4.8 + 4.*4. + 1*1 + systErr_fit_percent*systErr_fit_percent + 8.5*8.5 + 17.*17.);
       Double_t systErr_total = 0.01*systErr_total_percent*XS_CL90_average;
 
+      ofstream newFile;
+      newFile.open("output/upperLimit.dat", ios::app);
+      newFile<<Form("%d %d %g %g %g %g %g",Bs,Gamma,XS_CL90[0][Gamma][Bs],XS_CL90[1][Gamma][Bs],XS_CL90_average,systErr_total,systErr_total_percent)<<endl;
+      newFile.close();
+
       Int_t binNumber = Gamma - 4;
 
       hAmplitude[0]->SetBinContent(binNumber,amplBW[0]);
