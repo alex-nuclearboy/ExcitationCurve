@@ -44,14 +44,12 @@
 /////////////////////////////////////FITTING FUNCTIONS//////////////////////////////////////
 
 //POLYNOMIALS function (for background)
-Int_t bkgdParam[2];
-
 //first degree polynomial
-bkgdParam[0] = 1;
+Int_t bkgdParam1 = 1;
 Double_t bkgdPol1(Double_t *x, Double_t *par) {
   Double_t fpol = 0.;
   Double_t c = 1.;
-  for (Int_t i=0; i<bkgdParam[0]+1; i++) {
+  for (Int_t i=0; i<bkgdParam1+1; i++) {
     fpol += par[i]*c;
     c*=x[0];
   };
@@ -59,11 +57,11 @@ Double_t bkgdPol1(Double_t *x, Double_t *par) {
 }
 
 //second degree polynomial
-bkgdParam[1] = 2;
+Int_t bkgdParam2 = 2;
 Double_t bkgdPol2(Double_t *x, Double_t *par) {
   Double_t fpol = 0.;
   Double_t c = 1.;
-  for (Int_t i = 0; i<bkgdParam[1]+1; i++) {
+  for (Int_t i = 0; i<bkgdParam2+1; i++) {
     fpol += par[i]*c;
     c*=x[0];
   };
@@ -85,7 +83,7 @@ Double_t totalFuncBWpol1(Double_t *x, Double_t *par) {
   //POL1
   Double_t fpol = 0.;
   Double_t c = 1.;
-  for(Int_t i=0; i<bkgdParam[0]+1; i++) {
+  for(Int_t i=0; i<bkgdParam1+1; i++) {
     fpol += par[i+3]*c;
     c*=x[0];
   };
@@ -100,7 +98,7 @@ Double_t totalFuncBWpol2(Double_t *x, Double_t *par) {
   //POL2
   Double_t fpol = 0.;
   Double_t c = 1.;
-  for (Int_t i=0; i<bkgdParam[1]+1; i++) {
+  for (Int_t i=0; i<bkgdParam2+1; i++) {
     fpol += par[i+3]*c;
     c*=x[0];
   };
@@ -182,10 +180,10 @@ void excitationFunction() {
 
   //Fit background
   TF1 *fitBkgdPol[2];
-  fitBkgdPol[0] = new TF1("fitBkgdPol1",bkgdPol1,-70,30,bkgdParam[0]+1);
+  fitBkgdPol[0] = new TF1("fitBkgdPol1",bkgdPol1,-70,30,bkgdParam1+1);
   hSignal_normLumEff->Fit("fitBkgdPol1","","",-70,30);
 
-  fitBkgdPol[1] = new TF1("fitBkgdPol2",bkgdPol2,-70,30,bkgdParam[1]+1);
+  fitBkgdPol[1] = new TF1("fitBkgdPol2",bkgdPol2,-70,30,bkgdParam2+1);
   hSignal_normLumEff->Fit("fitBkgdPol2","","",-70,30);
 
 ////////////////////////////////////Fitting with BW + pol////////////////////////////////////
@@ -198,8 +196,8 @@ void excitationFunction() {
   //Number of parameters
   Int_t signalParamFit = 3;
   Int_t bkgdParamFit[2];
-  bkgdParamFit[0] = bkgdParam[0] + 1;
-  bkgdParamFit[1] = bkgdParam[1] + 1;
+  bkgdParamFit[0] = bkgdParam1 + 1;
+  bkgdParamFit[1] = bkgdParam2 + 1;
   Int_t totalParamFit[2];
   totalParamFit[0] = bkgdParamFit[0] + signalParamFit;
   totalParamFit[1] = bkgdParamFit[1] + signalParamFit;
@@ -209,7 +207,7 @@ void excitationFunction() {
   beginFit[0] = -65.; //-58.5
   endFit[0] = 27.5;   //30
   beginFit[1] = -65.; //-60
-  endFit[1] = 27.5.;  //30
+  endFit[1] = 27.5;   //30
 
   Double_t chi2_red[2][51][41];
 
@@ -619,7 +617,7 @@ void excitationFunction() {
       //hSignal_normLumEff_copy->SetTitle(Form("B_{s} = %d MeV, #Gamma = %d MeV, #chi^{2} = %.2f",-Bs,Gamma,Chi2_red1[Gamma][Bs]));
       hSignal_normLumEff_copy->SetTitle(Form("B_{s} = %d MeV, #Gamma = %d MeV",-Bs,Gamma));
       hSignal_normLumEff_copy->GetXaxis()->SetTitle("\\hbox{energia dostępna, MeV}");
-      hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane");
+      hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane, nb");
       hSignal_normLumEff_copy->Draw("E1");
 
       fitPol1[Gamma][Bs]->Draw("same");
