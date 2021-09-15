@@ -455,7 +455,7 @@ void excitationFunction() {
   //PL
   TCanvas* myCanvas00pl = new TCanvas;
 
-  hQ_signal->GetXaxis()->SetTitle("\\hbox{energia dostępna, MeV}");
+  hQ_signal->GetXaxis()->SetTitle("\\hbox{energia dostępna [MeV]}");
   hQ_signal->GetYaxis()->SetTitle("\\hbox{liczba zliczeń}");
   hQ_signal->Draw("E1");
 
@@ -515,8 +515,8 @@ void excitationFunction() {
   //PL
   TCanvas* myCanvas01pl = new TCanvas;
 
-  hSignal_normLumEff_copy->GetXaxis()->SetTitle("\\hbox{energia dostępna, MeV}");
-  hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane, nb");
+  hSignal_normLumEff_copy->GetXaxis()->SetTitle("\\hbox{energia dostępna [MeV]}");
+  hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane [nb]");
   hSignal_normLumEff_copy->Draw("E1");
 
   fitBkgdPol[0]->Draw("same");
@@ -621,8 +621,8 @@ void excitationFunction() {
 
       //hSignal_normLumEff_copy->SetTitle(Form("B_{s} = %d MeV, #Gamma = %d MeV, #chi^{2} = %.2f",-Bs,Gamma,Chi2_red1[Gamma][Bs]));
       hSignal_normLumEff_copy->SetTitle(Form("B_{s} = %d MeV, #Gamma = %d MeV",-Bs,Gamma));
-      hSignal_normLumEff_copy->GetXaxis()->SetTitle("\\hbox{energia dostępna, MeV}");
-      hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane, nb");
+      hSignal_normLumEff_copy->GetXaxis()->SetTitle("\\hbox{energia dostępna [MeV]}");
+      hSignal_normLumEff_copy->GetYaxis()->SetTitle("zdarzenia znormalizowane [nb]");
       hSignal_normLumEff_copy->Draw("E1");
 
       fitPol1[Gamma][Bs]->Draw("same");
@@ -752,8 +752,8 @@ void excitationFunction() {
   for(Int_t Bs=0; Bs<45; Bs=Bs+5) {
 
     hXS_uppLimit[Bs]->SetTitle(Form("B_{s} = %d MeV", -Bs));
-    hXS_uppLimit[Bs]->GetXaxis()->SetTitle("#Gamma, MeV");
-    hXS_uppLimit[Bs]->GetYaxis()->SetTitle("#sigma_{granica}^{CL=90%}, nb");
+    hXS_uppLimit[Bs]->GetXaxis()->SetTitle("#Gamma [MeV]");
+    hXS_uppLimit[Bs]->GetYaxis()->SetTitle("#sigma_{granica}^{CL=90%} [nb]");
     hXS_uppLimit[Bs]->DrawCopy("LF2");
     hXS_uppLimit_syst[Bs]->DrawCopy("same LF2");
 
@@ -799,9 +799,9 @@ void excitationFunction() {
   //PL
   TCanvas* myCanvas05_pl = new TCanvas;
 
-  hXS_uppLimit_2D->GetXaxis()->SetTitle("B_{s}, MeV");
-  hXS_uppLimit_2D->GetYaxis()->SetTitle("#Gamma, MeV");
-  hXS_uppLimit_2D->GetZaxis()->SetTitle("#sigma_{granica}^{CL=90%}, nb");
+  hXS_uppLimit_2D->GetXaxis()->SetTitle("B_{s} [MeV]");
+  hXS_uppLimit_2D->GetYaxis()->SetTitle("#Gamma [MeV]");
+  hXS_uppLimit_2D->GetZaxis()->SetTitle("#sigma_{granica}^{CL=90%} [nb]");
   hXS_uppLimit_2D->Draw("colz");
 
   myCanvas05_pl->Print("output/plots/pl/upperLimit_dppi0_2D_pl.png","png");
