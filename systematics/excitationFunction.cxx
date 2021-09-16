@@ -262,12 +262,12 @@ void excitationFunction() {
   TFile* myFile = new TFile("ExcitationFunction_normLumEff.root","RECREATE");
   //write new root file
   myFile->cd();
-  hSignal_normLumEff_copy->Write("");
+  hSignal_normLumEff_copy->Write(Form("hNormalizedEvents"));
   for (Int_t i=0; i<11; i++){
-    hSignal_normLumEff[i]->Write(Form("hSignal_normLumEff_%d",i));
+    hSignal_normLumEff[i]->Write(Form("hNormalizedEvents_%d",i));
   }
-  hSignal_normLumEff_stat->Write("");
-  hSignal_normLumEff_syst->Write("");
+  hSignal_normLumEff_stat->Write("hNormalizedEvents_stat"));
+  hSignal_normLumEff_syst->Write("hNormalizedEvents_syst"));
   myFile->Close();
 
   //Fit background
