@@ -4,3 +4,4 @@ scp wasa:/data7/users/khreptak/OUTPUT/DATA/DATA-newcuts-AddGammaCut-offset-bound
 mkdir ./output
 mkdir ./output/plots
 mkdir ./output/plots/pl
+mkdir ./systematics/plots
