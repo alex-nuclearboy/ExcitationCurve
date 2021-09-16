@@ -226,7 +226,7 @@ void excitationFunction() {
 
     //Double_t err = TMath::Sqrt(4.8*4.8 + 4.*4. + 17.*17.)*excit[0]*0.01;
     Double_t err = TMath::Sqrt(4.8*4.8 + 4.*4.)*excit[0]*0.01;
-    systError[0] = TMath::Sqrt(systError[1]*systError[1] + systError[2]*systError[2] + systError[3]*systError[3] + systError[4]*systError[4] + systError[5]*systError[5])+ err;
+    systError[0] = TMath::Sqrt(systError[1]*systError[1] + systError[2]*systError[2] + systError[3]*systError[3] + systError[4]*systError[4] + systError[5]*systError[5] + err*err);
 
     hSignal_normLumEff_stat->SetBinContent(l,excit[0]);
     hSignal_normLumEff_stat->SetBinError(l,statError_normLumEff[0]);
@@ -266,8 +266,8 @@ void excitationFunction() {
   for (Int_t i=0; i<11; i++){
     hSignal_normLumEff[i]->Write(Form("hNormalizedEvents_%d",i));
   }
-  hSignal_normLumEff_stat->Write("hNormalizedEvents_stat"));
-  hSignal_normLumEff_syst->Write("hNormalizedEvents_syst"));
+  hSignal_normLumEff_stat->Write("hNormalizedEvents_stat");
+  hSignal_normLumEff_syst->Write("hNormalizedEvents_syst");
   myFile->Close();
 
   //Fit background
