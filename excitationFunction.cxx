@@ -130,6 +130,8 @@ void excitationFunction() {
   f[2]->cd();
   hLuminosity = (TH1F*)gDirectory->Get("hLuminosity");   //take histogram
 
+  TH1F *hLuminosity_copy = (TH1F*)hLuminosity->Clone("hLuminosity_copy");;
+
   TF1 *fitFuncLuminosity = new TF1("fitFuncLuminosity", "[0]*x*x*x + [1]*x*x + [2]*x + [3]", -70.,30.);
   //parameters for luminosity fit function
   fitFuncLuminosity->SetParameter(0,2.38324e-05);
@@ -226,7 +228,11 @@ void excitationFunction() {
       hXS_uppLimit[k]=new TH1F(Form("hXS_uppLimit_Bs%d",k),"",46,4.5,50.5);
       hXS_uppLimit_syst[k]=new TH1F(Form("hXS_uppLimit_syst_Bs%d",k),"",46,4.5,50.5);
   }
-  TH2F *hXS_uppLimit_2D = new TH2F("hXS_uppLimit_2D","",41,-40.5,0.5,46,4.5,50.5);;
+  TH2F *hXS_uppLimit_2D = new TH2F("hXS_uppLimit_2D","",41,-40.5,0.5,46,4.5,50.5);
+
+  ofstream newFile;
+  newFile.open("output/upperLimit.dat", ios::trunc);
+  newFile<<Form("B G fit1  fit2  XS    syst syst %%")<<endl;
 
   ////////
   for (Int_t Bs = 0; Bs < 41; Bs++) {
@@ -382,10 +388,8 @@ void excitationFunction() {
       Double_t systErr_total_percent = TMath::Sqrt(4.8*4.8 + 4.*4. + 1*1 + systErr_fit_percent*systErr_fit_percent + 8.5*8.5 + 17.*17.);
       Double_t systErr_total = 0.01*systErr_total_percent*XS_CL90_average;
 
-      ofstream newFile;
-      newFile.open("output/upperLimit.dat", ios::app);
-      newFile<<Form("%d %d %g %g %g %g %g",Bs,Gamma,XS_CL90[0][Gamma][Bs],XS_CL90[1][Gamma][Bs],XS_CL90_average,systErr_total,systErr_total_percent)<<endl;
-      newFile.close();
+
+      newFile<<Form("%d %d %.2f %.2f %.2f %.2f %.2f",Bs,Gamma,XS_CL90[0][Gamma][Bs],XS_CL90[1][Gamma][Bs],XS_CL90_average,systErr_total,systErr_total_percent)<<endl;
 
       Int_t binNumber = Gamma - 4;
 
@@ -405,6 +409,23 @@ void excitationFunction() {
     }
 
   }
+
+  newFile.close();
+
+  //create root file
+  TFile* myFile = new TFile("output/ExcitationFunction_normLumEff.root","RECREATE");
+  //write new root file
+  myFile->cd();
+  hQ_signal->Write(Form("hAcceptedDATA"));
+  hLuminosity_copy->Write(Form("hLuminosity"));
+  hEfficiency->Write(Form("hEfficiency"));
+  hSignal_normLumEff_copy->Write(Form("hNormalizedEvents"));
+  for(Int_t Bs=0; Bs<45; Bs=Bs+5){
+    hXS_uppLimit[Bs]->Write(Form("hUpperLimit_Bs%d",Bs));
+    hXS_uppLimit_syst[Bs]->Write(Form("hUpperLimitError_Bs%d",Bs));
+  }
+  hXS_uppLimit_2D->Write("hUpperLimit2D");
+  myFile->Close();
 
 /////////////////////////////////////////HISTOGRAMS/////////////////////////////////////////
 
@@ -449,8 +470,8 @@ void excitationFunction() {
   myLegend00->AddEntry(hQ_signal, "experimental points", "ep");
   myLegend00->Draw();
 
-  myCanvas00->Print("output/plots/signal_dppi0.png", "png");
-  //myCanvas00->Print("output/plots/signal_dppi0.eps", "eps");
+  myCanvas00->Print("output/plots/hAcceptedDATA_dppi0.png", "png");
+  myCanvas00->Print("output/plots/hAcceptedDATA_dppi0.eps", "eps");
 
   //PL
   TCanvas* myCanvas00pl = new TCanvas;
@@ -464,8 +485,8 @@ void excitationFunction() {
   myLegend00pl->AddEntry(hQ_signal, "dane eksperymentalne", "ep");
   myLegend00pl->Draw();
 
-  myCanvas00pl->Print("output/plots/pl/signal_dppi0_pl.png", "png");
-  myCanvas00pl->Print("output/plots/pl/signal_dppi0_pl.eps", "eps");
+  myCanvas00pl->Print("output/plots/pl/hAcceptedDATA_dppi0_pl.png", "png");
+  myCanvas00pl->Print("output/plots/pl/hAcceptedDATA_dppi0_pl.eps", "eps");
 
   ////
   //Normalized events: experimental excitation function
@@ -509,8 +530,8 @@ void excitationFunction() {
   myLegend01->AddEntry(fitBkgdPol[1], "polynomial  2" , "l");
   myLegend01->Draw();
 
-  myCanvas01->Print("output/plots/signal_dppi0_normLumEff.png", "png");
-  //myCanvas01->Print("output/plots/signal_dppi0_normLumEff.eps", "eps");
+  myCanvas01->Print("output/plots/hSignal_dppi0_normLumEff.png", "png");
+  myCanvas01->Print("output/plots/hSignal_dppi0_normLumEff.eps", "eps");
 
   //PL
   TCanvas* myCanvas01pl = new TCanvas;
@@ -529,8 +550,8 @@ void excitationFunction() {
   myLegend01pl->AddEntry(fitBkgdPol[1], "wielomian  2" , "l");
   myLegend01pl->Draw();
 
-  myCanvas01pl->Print("output/plots/pl/signal_dppi0_normLumEff_pl.png", "png");
-  myCanvas01pl->Print("output/plots/pl/signal_dppi0_normLumEff_pl.eps", "eps");
+  myCanvas01pl->Print("output/plots/pl/hSignal_dppi0_normLumEff_pl.png", "png");
+  myCanvas01pl->Print("output/plots/pl/hSignal_dppi0_normLumEff_pl.eps", "eps");
 
   //FITTING
   TCanvas* myCanvas02a = new TCanvas;
@@ -576,7 +597,7 @@ void excitationFunction() {
       myLegend02a->AddEntry(fitPol1[Gamma][Bs], "polynomial 1" , "l");
       myLegend02a->Draw();
 
-      myCanvas02a->Print(Form("output/plots/signal_dppi0_normLumEff_fitBWpol1_Bs%d_G%d.png",Bs,Gamma),"png");
+      myCanvas02a->Print(Form("output/plots/hSignal_dppi0_normLumEff_fitBWpol1_Bs%d_G%d.png",Bs,Gamma),"png");
     }
   }
 
@@ -600,7 +621,6 @@ void excitationFunction() {
       fitPol2[Gamma][Bs]->Draw("same");
       fitBWpol2[Gamma][Bs]->Draw("same");
 
-
       //legend
       TLegend *myLegend02b = new TLegend(0.525, 0.720, 0.885, 0.885);
       myLegend02b->SetFillStyle(0); myLegend02b->SetFillColor(0); myLegend02b->SetLineColor(0); myLegend02b->SetTextSize(0.04);
@@ -609,7 +629,7 @@ void excitationFunction() {
       myLegend02b->AddEntry(fitPol2[Gamma][Bs], "polynomial 2" , "l");
       myLegend02b->Draw();
 
-      myCanvas02b->Print(Form("output/plots/signal_dppi0_normLumEff_fitBWpol2_Bs%d_G%d.png",Bs,Gamma),"png");
+      myCanvas02b->Print(Form("output/plots/hSignal_dppi0_normLumEff_fitBWpol2_Bs%d_G%d.png",Bs,Gamma),"png");
 
     }
   }
@@ -636,10 +656,10 @@ void excitationFunction() {
       myLegend02a_pl->AddEntry( fitPol1[Gamma][Bs], "wielomian 1" , "l");
       myLegend02a_pl->Draw();
 
-      myCanvas02a_pl->Print(Form("output/plots/pl/signal_dppi0_normLumEff_fitBWpol1_Bs%d_G%d_pl.png",Bs,Gamma),"png");
+      myCanvas02a_pl->Print(Form("output/plots/pl/hSignal_dppi0_normLumEff_fitBWpol1_Bs%d_G%d_pl.png",Bs,Gamma),"png");
 
       if(Bs == 30 && Gamma == 15){
-        myCanvas02a_pl->Print("output/plots/pl/signal_dppi0_normLumEff_fitBWpol1_Bs30_G15_pl.eps","eps");
+        myCanvas02a_pl->Print("output/plots/pl/hSignal_dppi0_normLumEff_fitBWpol1_Bs30_G15_pl.eps","eps");
       }
 
     }
@@ -665,10 +685,10 @@ void excitationFunction() {
       myLegend02b_pl->AddEntry( fitPol2[Gamma][Bs], "wielomian 2" , "l");
       myLegend02b_pl->Draw();
 
-      myCanvas02b_pl->Print(Form("output/plots/pl/signal_dppi0_normLumEff_fitBWpol2_Bs%d_G%d_pl.png",Bs,Gamma),"png");
+      myCanvas02b_pl->Print(Form("output/plots/pl/hSignal_dppi0_normLumEff_fitBWpol2_Bs%d_G%d_pl.png",Bs,Gamma),"png");
 
       if(Bs == 5 && Gamma == 40){
-        myCanvas02b_pl->Print("output/plots/pl/signal_dppi0_normLumEff_fitBWpol2_Bs5_G40_pl.eps","eps");
+        myCanvas02b_pl->Print("output/plots/pl/hSignal_dppi0_normLumEff_fitBWpol2_Bs5_G40_pl.eps","eps");
       }
 
     }
@@ -704,7 +724,7 @@ void excitationFunction() {
 
   for(Int_t Bs=0; Bs<45; Bs=Bs+5) {
 
-    hXS_uppLimit[Bs]->SetTitle(Form("B_{s} = %d MeV", -Bs));
+    hXS_uppLimit[Bs]->SetTitle(Form("B_{s} = %d MeV",-Bs));
     hXS_uppLimit[Bs]->GetYaxis()->SetRangeUser(0,35);
     hXS_uppLimit[Bs]->GetXaxis()->SetTitle("#Gamma [MeV]");
     hXS_uppLimit[Bs]->GetXaxis()->SetTitleSize(0.06);
@@ -742,8 +762,8 @@ void excitationFunction() {
     myLegend04->AddEntry(hXS_uppLimit_syst[Bs], "systematic uncertainties", "f");
     myLegend04->Draw();
 
-    myCanvas04->Print(Form("output/plots/upperLimit_dppi0_Bs%d.png",Bs),"png");
-    //myCanvas04->Print(Form("output/plots/upperLimit_dppi0_Bs%d.eps",Bs),"eps");
+    myCanvas04->Print(Form("output/plots/hUpperLimit_dppi0_Bs%d.png",Bs),"png");
+    //myCanvas04->Print(Form("output/plots/hUpperLimit_dppi0_Bs%d.eps",Bs),"eps");
 
   }
 
@@ -751,7 +771,7 @@ void excitationFunction() {
 
   for(Int_t Bs=0; Bs<45; Bs=Bs+5) {
 
-    hXS_uppLimit[Bs]->SetTitle(Form("B_{s} = %d MeV", -Bs));
+    hXS_uppLimit[Bs]->SetTitle(Form("B_{s} = %d MeV",-Bs));
     hXS_uppLimit[Bs]->GetXaxis()->SetTitle("#Gamma [MeV]");
     hXS_uppLimit[Bs]->GetYaxis()->SetTitle("#sigma_{granica}^{CL=90%} [nb]");
     hXS_uppLimit[Bs]->DrawCopy("LF2");
@@ -763,8 +783,8 @@ void excitationFunction() {
     myLegend04_pl->AddEntry(hXS_uppLimit_syst[Bs], "\\hbox{niepewności systematyczne}", "f");
     myLegend04_pl->Draw();
 
-    myCanvas04_pl->Print(Form("output/plots/pl/upperLimit_dppi0_Bs%d_pl.png",Bs),"png");
-    myCanvas04_pl->Print(Form("output/plots/pl/upperLimit_dppi0_Bs%d_pl.eps",Bs),"eps");
+    myCanvas04_pl->Print(Form("output/plots/pl/hUpperLimit_dppi0_Bs%d_pl.png",Bs),"png");
+    myCanvas04_pl->Print(Form("output/plots/pl/hUperLimit_dppi0_Bs%d_pl.eps",Bs),"eps");
 
   }
 
@@ -793,8 +813,8 @@ void excitationFunction() {
 
   hXS_uppLimit_2D->Draw("colz");
 
-  myCanvas05->Print("output/plots/upperLimit_dppi0_2D.png","png");
-  //myCanvas04->Print("output/plots/upperLimit_dppi0_2D.eps","eps");
+  myCanvas05->Print("output/plots/hUpperLimit_dppi0_2D.png","png");
+  myCanvas04->Print("output/plots/hUpperLimit_dppi0_2D.eps","eps");
 
   //PL
   TCanvas* myCanvas05_pl = new TCanvas;
@@ -804,7 +824,7 @@ void excitationFunction() {
   hXS_uppLimit_2D->GetZaxis()->SetTitle("#sigma_{granica}^{CL=90%} [nb]");
   hXS_uppLimit_2D->Draw("colz");
 
-  myCanvas05_pl->Print("output/plots/pl/upperLimit_dppi0_2D_pl.png","png");
-  myCanvas05_pl->Print("output/plots/pl/upperLimit_dppi0_2D_pl.eps","eps");
+  myCanvas05_pl->Print("output/plots/pl/hUpperLimit_dppi0_2D_pl.png","png");
+  myCanvas05_pl->Print("output/plots/pl/hUpperLimit_dppi0_2D_pl.eps","eps");
 
 }
