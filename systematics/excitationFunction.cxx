@@ -610,7 +610,7 @@ void excitationFunction() {
   myLegend03pl->AddEntry(fitBkgdPol[1], "wielomian  2" , "l");
   myLegend03pl->Draw();
 
-  myCanvas03pl->Print("plots/signal_dppi0_normLumEff_syst_pl.png", "png");
-  myCanvas03pl->Print("plots/signal_dppi0_normLumEff_syst_pl.eps", "eps");
+  myCanvas03pl->Print("plots/hSignal_dppi0_normLumEff_syst_pl.png", "png");
+  myCanvas03pl->Print("plots/hSignal_dppi0_normLumEff_syst_pl.eps", "eps");
 
 }
